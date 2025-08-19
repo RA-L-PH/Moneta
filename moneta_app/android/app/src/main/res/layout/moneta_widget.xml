@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="#FFFFFFFF">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Moneta Today"
+        android:textStyle="bold"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/tvDebit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Spent: 0.00"
+        android:textColor="#FF3B30" />
+
+    <TextView
+        android:id="@+id/tvCredit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Income: 0.00"
+        android:textColor="#34C759" />
+
+</LinearLayout>

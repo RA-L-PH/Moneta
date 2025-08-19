@@ -1,0 +1,23 @@
+{
+  "name": "moneta-functions",
+  "private": true,
+  "engines": {"node": "^20"},
+  "scripts": {
+  "build": "tsc",
+  "serve": "npm run build && dotenv -e .env.local -- firebase emulators:start --only functions",
+    "deploy": "npm run build && firebase deploy --only functions",
+    "lint": "eslint ."
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+  "dotenv-cli": "^7.4.2",
+    "eslint": "^9.0.0",
+    "typescript": "^5.4.0"
+  }
+}

@@ -3,6 +3,7 @@ import 'screens/home.dart';
 import 'theme/app_theme.dart';
 import 'services/sms_capture.dart';
 import 'services/notification_service.dart';
+import 'services/settings_service.dart';
 import 'theme/theme_controller.dart';
 import 'package:provider/provider.dart';
 import 'local/local_storage.dart';
@@ -11,6 +12,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize local storage (Hive) for on-device SMS-derived transactions
   await LocalStorage.init();
+  // Initialize settings service
+  await SettingsService.init();
   // Initialize notification service
   await NotificationService.initialize();
   // Request notification permissions

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 import 'package:permission_handler/permission_handler.dart';
 import '../local/local_storage.dart';
@@ -8,21 +8,25 @@ import '../local/local_models.dart';
 import 'widget_service.dart';
 import 'sms_parser_service.dart';
 import 'notification_service.dart';
+import 'settings_service.dart';
 
 class SmsCaptureService {
   static const _channel = EventChannel('moneta/sms_stream');
   static const _inbox = MethodChannel('moneta/sms_inbox');
   static StreamSubscription? _sub;
   static bool _imported = false;
-  static Duration _window = const Duration(days: 30);
-  // No auth dependency in local-only mode
+  static Duration _window = const Duration(days: 180);
 
   static void setWindowDays(int days) {
-    _window = Duration(days: days.clamp(1, 90));
+    _window = Duration(days: days.clamp(1, 365));
   }
 
   static Future<void> start() async {
     if (kIsWeb || !Platform.isAndroid) return;
+    // Apply saved window setting
+    final savedDays = SettingsService.get<int>('sms_import_days', defaultValue: 180);
+    _window = Duration(days: savedDays.clamp(1, 365));
+
     // Request SMS permission
     final status = await Permission.sms.request();
     if (!status.isGranted) return;
@@ -34,6 +38,13 @@ class SmsCaptureService {
       final text = (event as String?) ?? '';
       await _maybeSend(text);
     });
+  }
+
+  static Future<void> reimportInbox() async {
+    _imported = false;
+    final savedDays = SettingsService.get<int>('sms_import_days', defaultValue: 180);
+    _window = Duration(days: savedDays.clamp(1, 365));
+    await _importInboxIfNeeded();
   }
 
   static Future<void> _importInboxIfNeeded() async {
@@ -72,7 +83,9 @@ class SmsCaptureService {
           );
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('SMS import error: $e');
+    }
     _imported = true;
     // Update homescreen widget with fresh totals after import
     await WidgetService.updateTodayTotals();

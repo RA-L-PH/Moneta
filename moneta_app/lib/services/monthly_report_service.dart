@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../local/local_storage.dart';
 import '../local/local_models.dart';
 
@@ -33,7 +34,7 @@ class MonthlyReportService {
 
     // Note: This method can be extended to reset specific analytics
     // data structures if needed in the future
-    print('Monthly analytics reset completed');
+    debugPrint('Monthly analytics reset completed');
   }
 
   static Future<MonthlyReport> generateMonthlyReport(

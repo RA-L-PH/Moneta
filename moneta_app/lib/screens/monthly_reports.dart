@@ -215,10 +215,10 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             ),
           ),
           child: Text(report.aiSummary, style: const TextStyle(fontSize: 14)),

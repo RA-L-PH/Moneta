@@ -39,15 +39,13 @@ class MainActivity : FlutterActivity() {
 			val addressIdx = c.getColumnIndex("address")
 			val bodyIdx = c.getColumnIndex("body")
 			val dateIdx = c.getColumnIndex("date")
-			var count = 0
-			while (c.moveToNext() && count < 200) {
+			while (c.moveToNext()) {
 				val m = mapOf(
 					"address" to (c.getString(addressIdx) ?: ""),
 					"body" to (c.getString(bodyIdx) ?: ""),
 					"date" to (c.getLong(dateIdx).toString())
 				)
 				list.add(m)
-				count++
 			}
 		}
 		return list

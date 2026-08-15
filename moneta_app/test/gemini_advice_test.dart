@@ -5,7 +5,6 @@ import 'package:moneta_app/local/local_storage.dart';
 void main() {
   group('Gemini Advice Service Tests', () {
     setUpAll(() async {
-      // Initialize Hive for testing
       try {
         await LocalStorage.init();
       } catch (e) {
@@ -14,13 +13,12 @@ void main() {
     });
 
     test('should return fallback tips when no transactions', () async {
-      // This test will use fallback tips since there are no transactions in test environment
       final response = await GeminiAdviceService.getFinancialTips();
 
-      expect(response, isNotNull);
+      expect(response, isA<FinancialTipsResponse>());
       expect(response.tips, isNotEmpty);
       expect(response.tips.toLowerCase(), contains('track'));
-      expect(response.metrics, isNotNull);
+      expect(response.metrics, isA<FinancialMetrics>());
       expect(response.metrics.totalIncome, equals(0));
       expect(response.metrics.totalExpenses, equals(0));
     });
@@ -31,7 +29,7 @@ void main() {
         monthlyIncome: 50000,
       );
 
-      expect(response, isNotNull);
+      expect(response, isA<BudgetPlanResponse>());
       expect(response.budgetPlan, isNotEmpty);
       expect(response.budgetPlan.toLowerCase(), contains('budget'));
       expect(response.targetSavingsAmount, equals(0));
@@ -46,10 +44,10 @@ void main() {
         financialGoals: 'retirement planning',
       );
 
-      expect(response, isNotNull);
+      expect(response, isA<InvestmentAdviceResponse>());
       expect(response.investmentAdvice, isNotEmpty);
       expect(response.investmentAdvice.toLowerCase(), contains('investment'));
-      expect(response.projectedReturns, isNotNull);
+      expect(response.projectedReturns, isA<ProjectedReturns>());
       expect(response.projectedReturns.moderate, greaterThan(0));
     });
 
@@ -64,11 +62,8 @@ void main() {
         age: 25,
       );
 
-      // Conservative: 8% annual return
       final expectedConservative = monthlyInvestment * 12 * years * 1.08;
-      // Moderate: 12% annual return
       final expectedModerate = monthlyInvestment * 12 * years * 1.12;
-      // Aggressive: 15% annual return
       final expectedAggressive = monthlyInvestment * 12 * years * 1.15;
 
       expect(
@@ -96,7 +91,6 @@ void main() {
 
       expect(lowRisk.investmentAdvice, isNotEmpty);
       expect(highRisk.investmentAdvice, isNotEmpty);
-      // Both should return advice, specific content may vary
     });
   });
 }

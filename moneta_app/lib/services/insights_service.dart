@@ -1,17 +1,16 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../local/local_storage.dart';
 import '../local/local_models.dart';
+import 'settings_service.dart';
 
-/// Service for generating AI-powered spending insights using Gemini
+/// Service for generating AI-powered spending insights using NVIDIA NIM API
 class InsightsService {
-  static const String _geminiApiKey = 'AIzaSyBEEVjMe01KFNP3taowo3EVbV748B5FsoY';
-  static const String _geminiModel = 'gemini-2.0-flash';
-  static const String _baseUrl =
-      'https://generativelanguage.googleapis.com/v1beta/models';
+  static String get _apiKey => SettingsService.nvidiaApiKey;
+  static String get _model => SettingsService.nvidiaModel;
+  static String get _baseUrl => SettingsService.nvidiaBaseUrl;
 
   /// Generate comprehensive spending insights for a date range
   static Future<SpendingInsightsResponse> generateInsights({
@@ -19,7 +18,6 @@ class InsightsService {
     bool includeAiInsights = true,
   }) async {
     try {
-      // Get transactions for the date range
       final transactions = await _getTransactionsForRange(dateRange);
 
       if (transactions.isEmpty) {
@@ -38,7 +36,6 @@ class InsightsService {
         );
       }
 
-      // Calculate local metrics and insights
       final metrics = _calculateSpendingMetrics(transactions);
       final localInsights = _generateLocalInsights(transactions, metrics);
       final localTips = _generateLocalTips(transactions, metrics);
@@ -89,7 +86,6 @@ class InsightsService {
               )
               .toList();
 
-      // Apply duplicate filtering
       return _removeDuplicates(rangeTransactions);
     } catch (e) {
       debugPrint('Error fetching transactions: $e');
@@ -113,12 +109,9 @@ class InsightsService {
         totalCredit += txn.amount;
       } else {
         totalDebit += txn.amount;
-
-        // Category breakdown
         categorySpending[txn.category] =
             (categorySpending[txn.category] ?? 0) + txn.amount;
 
-        // Merchant analysis
         final merchant = txn.party.trim().toLowerCase();
         if (merchant.isNotEmpty) {
           merchantSpending[merchant] =
@@ -126,7 +119,6 @@ class InsightsService {
           merchantCount[merchant] = (merchantCount[merchant] ?? 0) + 1;
         }
 
-        // Daily spending pattern
         final day = DateTime(txn.date.year, txn.date.month, txn.date.day);
         dailySpending[day] = (dailySpending[day] ?? 0) + txn.amount;
       }
@@ -136,7 +128,6 @@ class InsightsService {
     final savingsRate =
         totalCredit > 0 ? ((totalCredit - totalDebit) / totalCredit) * 100 : 0;
 
-    // Top categories
     final topCategories =
         categorySpending.entries
             .map(
@@ -149,7 +140,6 @@ class InsightsService {
             .toList()
           ..sort((a, b) => b.amount.compareTo(a.amount));
 
-    // Top merchants
     final topMerchants =
         merchantSpending.entries
             .map(
@@ -162,7 +152,6 @@ class InsightsService {
             .toList()
           ..sort((a, b) => b.amount.compareTo(a.amount));
 
-    // Daily average
     final nonZeroDays =
         dailySpending.values.where((amount) => amount > 0).length;
     final avgDailySpending = nonZeroDays > 0 ? totalDebit / nonZeroDays : 0;
@@ -226,7 +215,6 @@ class InsightsService {
   ) {
     final tips = <String>[];
 
-    // Savings rate tips
     if (metrics.savingsRate < 10) {
       tips.add('💡 Low savings rate! Aim for at least 20% savings');
     } else if (metrics.savingsRate < 20) {
@@ -235,7 +223,6 @@ class InsightsService {
       tips.add('🌟 Excellent savings rate! Keep it up!');
     }
 
-    // Category-specific tips
     for (final cat in metrics.topCategories.take(3)) {
       if (cat.percentage > 30) {
         final tag = _getCategoryTag(cat.category);
@@ -246,7 +233,6 @@ class InsightsService {
       }
     }
 
-    // Frequent merchant tips
     for (final merchant in metrics.topMerchants.take(2)) {
       if (merchant.frequency >= 5) {
         final tag = _getFrequencyTag(merchant.frequency);
@@ -256,7 +242,6 @@ class InsightsService {
       }
     }
 
-    // Daily spending pattern tips
     if (metrics.avgDailySpending > 1000) {
       tips.add(
         '📱 High daily spending detected. Try setting daily spend limits.',
@@ -268,17 +253,17 @@ class InsightsService {
         : ['Keep tracking your expenses for better insights!'];
   }
 
-  /// Generate AI-powered insights using Gemini
+  /// Generate AI-powered insights using NVIDIA NIM API
   static Future<String> _generateAiInsights(
     List<LocalTxn> transactions,
     SpendingMetrics metrics,
     DateTimeRange dateRange,
   ) async {
     final prompt = _createInsightsPrompt(transactions, metrics, dateRange);
-    return await _callGeminiAPI(prompt);
+    return await _callNvidiaNimApi(prompt);
   }
 
-  /// Create comprehensive insights prompt for Gemini
+  /// Create comprehensive insights prompt
   static String _createInsightsPrompt(
     List<LocalTxn> transactions,
     SpendingMetrics metrics,
@@ -287,7 +272,6 @@ class InsightsService {
     final nf = NumberFormat.decimalPattern('en_IN');
     final dateFormat = DateFormat('dd MMM yyyy');
 
-    // Category breakdown
     final categoryDetails = metrics.topCategories
         .map(
           (cat) =>
@@ -295,7 +279,6 @@ class InsightsService {
         )
         .join('\n');
 
-    // Merchant analysis
     final merchantDetails = metrics.topMerchants
         .take(10)
         .map(
@@ -304,7 +287,6 @@ class InsightsService {
         )
         .join('\n');
 
-    // Recent transaction pattern
     final recentTransactions = transactions
         .where((txn) => txn.type == 'debit')
         .take(20)
@@ -357,43 +339,51 @@ Provide detailed financial insights covering:
 Keep the analysis comprehensive but concise, focusing on the most impactful insights.''';
   }
 
-  /// Call Gemini API for insights generation
-  static Future<String> _callGeminiAPI(String prompt) async {
+  /// Call NVIDIA NIM API (OpenAI-compatible)
+  static Future<String> _callNvidiaNimApi(String prompt) async {
+    if (_apiKey.isEmpty) {
+      throw Exception('NVIDIA_API_KEY not configured. Set it in --dart-define or .env');
+    }
+
     try {
-      final url = Uri.parse(
-        '$_baseUrl/$_geminiModel:generateContent?key=$_geminiApiKey',
-      );
+      final url = Uri.parse('$_baseUrl/chat/completions');
 
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
         body: jsonEncode({
-          'contents': [
-            {
-              'parts': [
-                {'text': prompt},
-              ],
-            },
+          'model': _model,
+          'messages': [
+            {'role': 'user', 'content': prompt},
           ],
-          'generationConfig': {
-            'temperature': 0.7,
-            'topK': 40,
-            'topP': 0.95,
-            'maxOutputTokens': 2048,
-          },
+          'temperature': 0.7,
+          'top_p': 0.95,
+          'max_tokens': 2048,
+          'stream': false,
         }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['candidates']?[0]?['content']?['parts']?[0]?['text'] ??
-            'Unable to generate AI insights at the moment.';
+        final message = data['choices']?[0]?['message'];
+        // Handle thinking models that return reasoning_content
+        final content = message?['content'];
+        final reasoning = message?['reasoning_content'];
+        if (content != null && content.toString().isNotEmpty) {
+          return content;
+        } else if (reasoning != null && reasoning.toString().isNotEmpty) {
+          return reasoning;
+        }
+        return 'Unable to generate AI insights at the moment.';
       } else {
-        throw Exception('API call failed with status: ${response.statusCode}');
+        throw Exception('NVIDIA NIM API error ${response.statusCode}: ${response.body}');
       }
     } catch (e) {
-      debugPrint('Gemini API error: $e');
-      throw e;
+      debugPrint('NVIDIA NIM API error: $e');
+      rethrow;
     }
   }
 
@@ -459,7 +449,7 @@ Keep the analysis comprehensive but concise, focusing on the most impactful insi
     return '📝';
   }
 
-  /// Remove duplicate transactions using the same logic as other services
+  /// Remove duplicate transactions
   static List<LocalTxn> _removeDuplicates(List<LocalTxn> transactions) {
     final uniqueTransactions = <LocalTxn>[];
 
@@ -483,29 +473,21 @@ Keep the analysis comprehensive but concise, focusing on the most impactful insi
 
   /// Compare two transactions to determine if they are duplicates
   static bool _areTransactionsSimilar(LocalTxn txn1, LocalTxn txn2) {
-    // Same amount, type, and similar date (within 1 minute)
     if (txn1.amount == txn2.amount &&
         txn1.type == txn2.type &&
         txn1.date.difference(txn2.date).abs().inMinutes <= 1) {
-      // Check if party names are similar (accounting for case and whitespace)
       final party1 = txn1.party.trim().toLowerCase();
       final party2 = txn2.party.trim().toLowerCase();
 
-      if (party1 == party2) {
-        return true;
-      }
+      if (party1 == party2) return true;
 
-      // Check if one party name contains the other (for variations)
       if (party1.isNotEmpty &&
           party2.isNotEmpty &&
           (party1.contains(party2) || party2.contains(party1))) {
         return true;
       }
 
-      // Check if raw SMS content is identical
-      if (txn1.raw.trim() == txn2.raw.trim()) {
-        return true;
-      }
+      if (txn1.raw.trim() == txn2.raw.trim()) return true;
     }
 
     return false;

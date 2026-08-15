@@ -3,21 +3,18 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import '../local/local_storage.dart';
 import '../local/local_models.dart';
+import 'settings_service.dart';
 
-/// Service for getting AI-powered financial advice using Gemini
+/// Service for getting AI-powered financial advice using NVIDIA NIM API
 class GeminiAdviceService {
-  static const String _geminiApiKey = 'AIzaSyBEEVjMe01KFNP3taowo3EVbV748B5FsoY';
-  static const String _geminiModel = 'gemini-2.0-flash';
-  static const String _baseUrl =
-      'https://generativelanguage.googleapis.com/v1beta/models';
+  static String get _apiKey => SettingsService.nvidiaApiKey;
+  static String get _model => SettingsService.nvidiaModel;
+  static String get _baseUrl => SettingsService.nvidiaBaseUrl;
 
   /// Get personalized financial tips based on local spending patterns
   static Future<FinancialTipsResponse> getFinancialTips() async {
     try {
-      // Get local transaction data
       final transactions = LocalStorage.all();
-
-      // Filter to last 3 months
       final now = DateTime.now();
       final threeMonthsAgo = now.subtract(const Duration(days: 90));
       final recentTransactions =
@@ -25,7 +22,6 @@ class GeminiAdviceService {
               .where((txn) => txn.date.isAfter(threeMonthsAgo))
               .toList();
 
-      // Apply duplicate filtering for accurate calculations
       final uniqueTransactions = _removeDuplicates(recentTransactions);
 
       if (uniqueTransactions.isEmpty) {
@@ -49,24 +45,18 @@ class GeminiAdviceService {
         );
       }
 
-      // Calculate metrics
       final metrics = _calculateMetrics(uniqueTransactions);
-
-      // Create prompt for Gemini
       final prompt = _createFinancialTipsPrompt(metrics, uniqueTransactions);
-
-      // Call Gemini API
-      final tips = await _callGeminiAPI(prompt);
+      final tips = await _callNvidiaNimApi(prompt);
 
       return FinancialTipsResponse(tips: tips, metrics: metrics);
     } catch (e) {
       debugPrint('Error getting financial tips: $e');
-      // Return fallback tips
       return FinancialTipsResponse(
         tips: '''## Personal Financial Tips
 
 - **Track Daily Expenses**: Monitor your spending patterns to identify areas for improvement
-- **Monthly Budget**: Set a realistic budget and stick to it consistently  
+- **Monthly Budget**: Set a realistic budget and stick to it consistently
 - **Save First**: Aim to save at least **20%** of your income before spending
 - **Emergency Fund**: Build a fund covering **6 months** of expenses
 - **SIP Investment**: Start a systematic investment plan of **₹5,000-10,000/month** in diversified mutual funds
@@ -98,9 +88,7 @@ class GeminiAdviceService {
               .where((txn) => txn.date.isAfter(threeMonthsAgo))
               .toList();
 
-      // Apply duplicate filtering for accurate calculations
       final uniqueTransactions = _removeDuplicates(recentTransactions);
-
       final metrics = _calculateMetrics(uniqueTransactions);
       final avgMonthlyIncome = monthlyIncome ?? metrics.totalIncome / 3;
 
@@ -127,7 +115,7 @@ Format as a structured budget with amounts and percentages. Be practical and ach
 - Structure as: ## Monthly Budget Plan, then sections for different allocations
 - Include specific amounts in INR''';
 
-      final budgetPlan = await _callGeminiAPI(prompt);
+      final budgetPlan = await _callNvidiaNimApi(prompt);
 
       return BudgetPlanResponse(
         budgetPlan: budgetPlan,
@@ -200,7 +188,7 @@ Provide specific recommendations including:
 
 Focus on Indian investment options and current market conditions. Be specific with fund categories and allocation percentages.''';
 
-      final advice = await _callGeminiAPI(prompt);
+      final advice = await _callNvidiaNimApi(prompt);
 
       return InvestmentAdviceResponse(
         investmentAdvice: advice,
@@ -252,7 +240,7 @@ Focus on Indian investment options and current market conditions. Be specific wi
     double totalIncome = 0;
     double totalExpenses = 0;
     double currentBalance = 0;
-    Map<String, double> categorySpending = {};
+    final Map<String, double> categorySpending = {};
 
     for (final txn in transactions) {
       final amount = txn.amount ?? 0.0;
@@ -329,43 +317,50 @@ Provide 5-7 personalized financial tips focusing on:
 - Structure as: ## Financial Tips, then bullet points for each tip''';
   }
 
-  /// Call Gemini API
-  static Future<String> _callGeminiAPI(String prompt) async {
+  /// Call NVIDIA NIM API (OpenAI-compatible)
+  static Future<String> _callNvidiaNimApi(String prompt) async {
+    if (_apiKey.isEmpty) {
+      throw Exception('NVIDIA_API_KEY not configured. Set it in --dart-define or .env');
+    }
+
     try {
-      final url = Uri.parse(
-        '$_baseUrl/$_geminiModel:generateContent?key=$_geminiApiKey',
-      );
+      final url = Uri.parse('$_baseUrl/chat/completions');
 
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
         body: jsonEncode({
-          'contents': [
-            {
-              'parts': [
-                {'text': prompt},
-              ],
-            },
+          'model': _model,
+          'messages': [
+            {'role': 'user', 'content': prompt},
           ],
-          'generationConfig': {
-            'temperature': 0.7,
-            'topK': 40,
-            'topP': 0.95,
-            'maxOutputTokens': 1024,
-          },
+          'temperature': 0.7,
+          'top_p': 0.95,
+          'max_tokens': 2048,
+          'stream': false,
         }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['candidates']?[0]?['content']?['parts']?[0]?['text'] ??
-            'Unable to generate advice at the moment.';
+        final message = data['choices']?[0]?['message'];
+        final content = message?['content'];
+        final reasoning = message?['reasoning_content'];
+        if (content != null && content.toString().isNotEmpty) {
+          return content;
+        } else if (reasoning != null && reasoning.toString().isNotEmpty) {
+          return reasoning;
+        }
+        return 'Unable to generate advice at the moment.';
       } else {
-        throw Exception('API call failed with status: ${response.statusCode}');
+        throw Exception('NVIDIA NIM API error ${response.statusCode}: ${response.body}');
       }
     } catch (e) {
-      debugPrint('Gemini API error: $e');
-      throw e;
+      debugPrint('NVIDIA NIM API error: $e');
+      rethrow;
     }
   }
 
@@ -393,29 +388,21 @@ Provide 5-7 personalized financial tips focusing on:
 
   /// Compare two transactions to determine if they are duplicates
   static bool _areTransactionsSimilar(LocalTxn txn1, LocalTxn txn2) {
-    // Same amount, type, and similar date (within 1 minute)
     if (txn1.amount == txn2.amount &&
         txn1.type == txn2.type &&
         txn1.date.difference(txn2.date).abs().inMinutes <= 1) {
-      // Check if party names are similar (accounting for case and whitespace)
       final party1 = txn1.party.trim().toLowerCase();
       final party2 = txn2.party.trim().toLowerCase();
 
-      if (party1 == party2) {
-        return true;
-      }
+      if (party1 == party2) return true;
 
-      // Check if one party name contains the other (for variations)
       if (party1.isNotEmpty &&
           party2.isNotEmpty &&
           (party1.contains(party2) || party2.contains(party1))) {
         return true;
       }
 
-      // Check if raw SMS content is identical
-      if (txn1.raw.trim() == txn2.raw.trim()) {
-        return true;
-      }
+      if (txn1.raw.trim() == txn2.raw.trim()) return true;
     }
 
     return false;

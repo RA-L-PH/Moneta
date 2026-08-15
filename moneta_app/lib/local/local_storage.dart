@@ -82,7 +82,7 @@ class LocalStorage {
   }
 
   static MonthlyReport? getMonthlyReport(int year, int month) {
-    final key = '${year}-${month.toString().padLeft(2, '0')}';
+    final key = '$year-${month.toString().padLeft(2, '0')}';
     return _reportsBox.get(key);
   }
 

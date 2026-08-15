@@ -193,4 +193,44 @@ class DashboardCalculationService {
     final uniqueTransactions = _removeDuplicates(currentMonthTransactions);
     return uniqueTransactions.length;
   }
+
+  /// Get monthly spending/earning trend for the last N months
+  static List<Map<String, dynamic>> getMonthlyTrend({int months = 6}) {
+    final now = DateTime.now();
+    final allTransactions = LocalStorage.all();
+    final result = <Map<String, dynamic>>[];
+
+    for (int i = months - 1; i >= 0; i--) {
+      final month = DateTime(now.year, now.month - i, 1);
+      final lastDay = DateTime(month.year, month.month + 1, 0);
+
+      final monthTxns = allTransactions.where((t) =>
+          !t.date.isBefore(month) &&
+          !t.date.isAfter(lastDay)).toList();
+
+      double income = 0;
+      double expense = 0;
+      for (final t in monthTxns) {
+        if (t.type == 'credit') {
+          income += t.amount;
+        } else {
+          expense += t.amount;
+        }
+      }
+
+      result.add({
+        'month': month,
+        'label': _monthAbbr(month.month),
+        'income': income,
+        'expense': expense,
+      });
+    }
+
+    return result;
+  }
+
+  static String _monthAbbr(int month) {
+    const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return m[(month - 1).clamp(0, 11)];
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class NotificationService {
@@ -12,7 +13,7 @@ class NotificationService {
       await _platform.invokeMethod('initialize');
       _initialized = true;
     } catch (e) {
-      print('Failed to initialize notifications: $e');
+      debugPrint('Failed to initialize notifications: $e');
     }
   }
 
@@ -34,7 +35,7 @@ class NotificationService {
               ? '+₹${amount.toStringAsFixed(2)}'
               : '-₹${amount.toStringAsFixed(2)}';
 
-      String body = '$amountText';
+      String body = amountText;
       if (party.isNotEmpty) {
         body += ' • $party';
       }
@@ -51,7 +52,7 @@ class NotificationService {
       });
     } catch (e) {
       // Silently fail if notifications are not available
-      print('Failed to show notification: $e');
+      debugPrint('Failed to show notification: $e');
     }
   }
 
@@ -71,7 +72,7 @@ class NotificationService {
         'importance': 'low',
       });
     } catch (e) {
-      print('Failed to show SMS notification: $e');
+      debugPrint('Failed to show SMS notification: $e');
     }
   }
 
@@ -82,7 +83,7 @@ class NotificationService {
       final result = await _platform.invokeMethod('requestPermissions');
       return result == true;
     } catch (e) {
-      print('Failed to request notification permissions: $e');
+      debugPrint('Failed to request notification permissions: $e');
       return false;
     }
   }

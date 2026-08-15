@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 admin.initializeApp();
 const db = admin.firestore();
 const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 // Ensure a consistent region to match the mobile client
 functions.setGlobalOptions({ region: 'us-central1' });
@@ -297,7 +298,7 @@ export const generateSummary = functions.https.onCall(async (data: any, context:
 Return 4-8 bullet points max, include totals, top categories, unusual items, and a simple call-to-action.\n
 Transactions TSV (date\ttype\tcategory\tamount\tdescription):\n${summaryInput}`;
 
-  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=AIzaSyBEEVjMe01KFNP3taowo3EVbV748B5FsoY` , {
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}` , {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -437,7 +438,7 @@ Provide 5-7 personalized financial tips focusing on:
 - Structure as: ## Financial Tips, then bullet points for each tip`;
 
   try {
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=AIzaSyBEEVjMe01KFNP3taowo3EVbV748B5FsoY`, {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -530,7 +531,7 @@ Create a detailed budget plan with:
 - Be practical and achievable`;
 
   try {
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=AIzaSyBEEVjMe01KFNP3taowo3EVbV748B5FsoY`, {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -592,7 +593,7 @@ Provide specific recommendations including:
 Focus on Indian investment options and current market conditions. Be specific with fund categories and allocation percentages.`;
 
   try {
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=AIzaSyBEEVjMe01KFNP3taowo3EVbV748B5FsoY`, {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

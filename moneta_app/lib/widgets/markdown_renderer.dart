@@ -78,7 +78,7 @@ class MarkdownRenderer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('• ', style: baseStyle),
-                Expanded(child: Text(line.substring(2), style: baseStyle)),
+                Expanded(child: _buildRichText(line.substring(2), baseStyle, context)),
               ],
             ),
           ),
@@ -86,12 +86,30 @@ class MarkdownRenderer extends StatelessWidget {
       }
       // Handle numbered lists
       else if (RegExp(r'^\d+\.\s').hasMatch(line)) {
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, bottom: 4.0),
-            child: Text(line, style: baseStyle),
-          ),
-        );
+        final match = RegExp(r'^(\d+\.\s)(.*)').firstMatch(line);
+        if (match != null) {
+          final prefix = match.group(1) ?? '';
+          final content = match.group(2) ?? '';
+          widgets.add(
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 4.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(prefix, style: baseStyle),
+                  Expanded(child: _buildRichText(content, baseStyle, context)),
+                ],
+              ),
+            ),
+          );
+        } else {
+          widgets.add(
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 4.0),
+              child: _buildRichText(line, baseStyle, context),
+            ),
+          );
+        }
       }
       // Handle bold text
       else if (line.startsWith('**') && line.endsWith('**')) {

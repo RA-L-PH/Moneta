@@ -12,7 +12,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-24 px-6">
+    <section id="how-it-works" className="py-24 px-6 overflow-hidden">
       <div className="max-w-6xl mx-auto">
         <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-3xl md:text-5xl font-bold text-center mb-20 font-display text-ink">

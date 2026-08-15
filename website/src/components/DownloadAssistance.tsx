@@ -127,7 +127,7 @@ export default function DownloadAssistance() {
                   <div>
                     <h4 className="font-bold text-ink text-sm mb-1">Enable "Unknown Sources"</h4>
                     <p className="text-xs text-green-muted leading-relaxed">
-                      Since this is a self-signed release APK, Android will prompt you. Tap **Settings** in the popup and toggle **"Allow from this source"** for your browser or file manager.
+                      Since this is a self-signed release APK, Android will prompt you. Tap <strong className="font-semibold text-ink">Settings</strong> in the popup and toggle <strong className="font-semibold text-ink">"Allow from this source"</strong> for your browser or file manager.
                     </p>
                   </div>
                 </div>
@@ -139,7 +139,7 @@ export default function DownloadAssistance() {
                   <div>
                     <h4 className="font-bold text-ink text-sm mb-1">Confirm Installation</h4>
                     <p className="text-xs text-green-muted leading-relaxed">
-                      Go back to the installer dialog and tap **Install**. Once completed, tap **Open** to launch Moneta and begin tracking!
+                      Go back to the installer dialog and tap <strong className="font-semibold text-ink">Install</strong>. Once completed, tap <strong className="font-semibold text-ink">Open</strong> to launch Moneta and begin tracking!
                     </p>
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export default function DownloadAssistance() {
                   <div>
                     <h4 className="font-bold text-ink text-sm mb-1">Enable USB Debugging</h4>
                     <p className="text-xs text-green-muted leading-relaxed">
-                      Go to **Settings &gt; About Phone** and tap **Build Number** 7 times. Enable **USB Debugging** inside the newly unlocked **Developer Options**.
+                      Go to <strong className="font-semibold text-ink">Settings &gt; About Phone</strong> and tap <strong className="font-semibold text-ink">Build Number</strong> 7 times. Enable <strong className="font-semibold text-ink">USB Debugging</strong> inside the newly unlocked <strong className="font-semibold text-ink">Developer Options</strong>.
                     </p>
                   </div>
                 </div>

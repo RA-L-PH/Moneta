@@ -1,7 +1,17 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MdVerified, MdRestaurant, MdAccountBalance, MdArrowForward, MdSmartToy } from 'react-icons/md';
 
 export default function SmsDemo() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <section className="py-24 px-6 overflow-hidden">
       <div className="max-w-6xl mx-auto">
@@ -69,15 +79,15 @@ export default function SmsDemo() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="md:col-span-2 flex justify-center"
+            className="md:col-span-2 flex justify-center py-4 md:py-0"
           >
             <div className="relative">
               <motion.div
-                animate={{ x: [0, 8, 0] }}
+                animate={isMobile ? { y: [0, 8, 0] } : { x: [0, 8, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
                 className="w-16 h-16 bg-green rounded-full flex items-center justify-center shadow-lg shadow-green/30"
               >
-                <MdArrowForward size={28} className="text-white" />
+                <MdArrowForward size={28} className="text-white rotate-90 md:rotate-0" />
               </motion.div>
               <div className="absolute -inset-2 bg-green/20 rounded-full blur-xl animate-pulse" />
             </div>

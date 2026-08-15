@@ -19,11 +19,11 @@ export default function HowItWorks() {
           Up and running in <span className="text-gradient-green">minutes</span>.
         </motion.h2>
 
-        {/* Steps with connecting line */}
-        <div className="relative">
+        {/* Desktop Steps with connecting line */}
+        <div className="hidden md:block relative">
           {/* Connecting line */}
-          <div className="hidden md:block absolute top-7 left-[8.33%] right-[8.33%] h-[2px] bg-green-muted/20" />
-          <div className="hidden md:block absolute top-7 left-[8.33%] w-[83.34%] h-[2px] bg-gradient-to-r from-green to-green-deep" />
+          <div className="hidden lg:block absolute top-7 left-[8.33%] right-[8.33%] h-[2px] bg-green-muted/20" />
+          <div className="hidden lg:block absolute top-7 left-[8.33%] w-[83.34%] h-[2px] bg-gradient-to-r from-green to-green-deep" />
 
           <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-8 relative">
             {steps.map((s, i) => (
@@ -39,6 +39,34 @@ export default function HowItWorks() {
               </motion.div>
             ))}
           </div>
+        </div>
+
+        {/* Mobile Alternating Layout */}
+        <div className="flex md:hidden flex-col gap-10 relative">
+          {steps.map((s, i) => {
+            const isLeft = i % 2 === 0;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: isLeft ? -30 : 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className={`flex items-start gap-4 ${isLeft ? 'flex-row text-left' : 'flex-row-reverse text-right'}`}
+              >
+                {/* Step Circle Icon */}
+                <div className="shrink-0 relative z-10 w-12 h-12 rounded-full bg-white border-2 border-green flex items-center justify-center shadow-sm">
+                  <s.icon size={20} className="text-green" />
+                </div>
+                {/* Content */}
+                <div className="flex flex-col justify-center">
+                  <span className="text-[10px] font-bold tracking-wider text-green-deep uppercase">Step {s.num}</span>
+                  <h3 className="text-base font-semibold mt-0.5 mb-1 text-ink">{s.title}</h3>
+                  <p className="text-xs leading-relaxed text-green-muted">{s.desc}</p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

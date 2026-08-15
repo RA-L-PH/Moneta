@@ -39,7 +39,7 @@ export default function Navbar() {
               {l.name}
             </a>
           ))}
-          <a href={`${REPO}/moneta-arm64-v8a-release.apk`} target="_blank" rel="noopener noreferrer"
+          <a href={`${REPO}/moneta-v2.0.0-arm64-v8a.apk`} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 bg-ink text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-ink/90 transition-colors shadow-md">
             <MdDownload size={16} />
             Download
@@ -60,7 +60,7 @@ export default function Navbar() {
                 {l.name}
               </a>
             ))}
-            <a href={`${REPO}/moneta-arm64-v8a-release.apk`} target="_blank" rel="noopener noreferrer"
+            <a href={`${REPO}/moneta-v2.0.0-arm64-v8a.apk`} target="_blank" rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-ink text-white px-5 py-2.5 rounded-full text-sm font-semibold mt-2">
               <MdDownload size={16} />
               Download

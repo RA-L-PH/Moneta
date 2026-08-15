@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MdDownload, MdAndroid, MdCheckCircle, MdTerminal, MdUsb, MdContentCopy } from 'react-icons/md';
+import { MdDownload, MdAndroid, MdCheckCircle, MdTerminal, MdUsb, MdContentCopy, MdPhoneAndroid } from 'react-icons/md';
 
 const REPO = 'https://github.com/RA-L-PH/Moneta/releases/download/Latest';
 const APKs = [
-  { name: 'ARM64 (Recommended)', file: 'moneta-v2.0.0-arm64-v8a.apk', note: 'Most modern phones (2019+)', size: '18.3 MB', recommended: true },
-  { name: 'ARM', file: 'moneta-v2.0.0-armeabi-v7a.apk', note: 'Older Android phones', size: '16.0 MB', recommended: false },
-  { name: 'x86_64', file: 'moneta-v2.0.0-x86_64.apk', note: 'Emulators, Chromebooks, tablets', size: '19.7 MB', recommended: false },
-  { name: 'Universal', file: 'moneta-v2.0.0.apk', note: 'All architectures (larger file)', size: '52.0 MB', recommended: false },
+  { name: 'ARM64 (Recommended)', file: 'moneta-v2.0.0-arm64-v8a.apk', note: 'Most modern phones (2019+)', size: '19.2 MB', recommended: true },
+  { name: 'ARM', file: 'moneta-v2.0.0-armeabi-v7a.apk', note: 'Older Android phones', size: '16.8 MB', recommended: false },
+  { name: 'x86_64', file: 'moneta-v2.0.0-x86_64.apk', note: 'Emulators, Chromebooks, tablets', size: '20.7 MB', recommended: false },
+  { name: 'Universal', file: 'moneta-v2.0.0.apk', note: 'All architectures (larger file)', size: '54.6 MB', recommended: false },
 ];
 
 export default function DownloadAssistance() {
@@ -96,16 +96,64 @@ export default function DownloadAssistance() {
           ))}
         </div>
 
-        {/* Installation Instructions */}
+        {/* Installation Instructions Panel */}
         <div className="bg-white rounded-3xl p-8 md:p-12 border border-green-muted/10 shadow-sm">
-          <div className="grid lg:grid-cols-12 gap-8 items-start">
-            {/* ADB Guides */}
-            <div className="lg:col-span-7 space-y-6">
+          <div className="grid lg:grid-cols-2 gap-12">
+            
+            {/* Column 1: Standard Device Install (Unknown Sources) */}
+            <div className="space-y-6">
+              <h3 className="text-xl md:text-2xl font-bold font-display text-ink flex items-center gap-2">
+                <MdPhoneAndroid className="text-green" size={24} />
+                Standard Device Installation
+              </h3>
+              
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 rounded-full bg-green/5 border border-green/10 flex items-center justify-center flex-shrink-0 text-green font-bold text-xs">
+                    1
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-ink text-sm mb-1">Download & Open APK</h4>
+                    <p className="text-xs text-green-muted leading-relaxed">
+                      Download the recommended APK from the section above. Once completed, open the notification panel or your File Manager and tap the file.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 rounded-full bg-green/5 border border-green/10 flex items-center justify-center flex-shrink-0 text-green font-bold text-xs">
+                    2
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-ink text-sm mb-1">Enable "Unknown Sources"</h4>
+                    <p className="text-xs text-green-muted leading-relaxed">
+                      Since this is a self-signed release APK, Android will prompt you. Tap **Settings** in the popup and toggle **"Allow from this source"** for your browser or file manager.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 rounded-full bg-green/5 border border-green/10 flex items-center justify-center flex-shrink-0 text-green font-bold text-xs">
+                    3
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-ink text-sm mb-1">Confirm Installation</h4>
+                    <p className="text-xs text-green-muted leading-relaxed">
+                      Go back to the installer dialog and tap **Install**. Once completed, tap **Open** to launch Moneta and begin tracking!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Column 2: Developer Install (ADB) */}
+            <div className="space-y-6 border-t lg:border-t-0 lg:border-l border-green-muted/15 pt-8 lg:pt-0 lg:pl-12">
               <h3 className="text-xl md:text-2xl font-bold font-display text-ink flex items-center gap-2">
                 <MdTerminal className="text-green" size={24} />
-                ADB Stream Installation
+                Developer Install (ADB)
               </h3>
-              <div className="space-y-4">
+              
+              <div className="space-y-4 mb-6">
                 <div className="flex gap-4">
                   <div className="w-8 h-8 rounded-full bg-green/5 border border-green/10 flex items-center justify-center flex-shrink-0 text-green font-bold text-xs">
                     1
@@ -113,7 +161,7 @@ export default function DownloadAssistance() {
                   <div>
                     <h4 className="font-bold text-ink text-sm mb-1">Enable USB Debugging</h4>
                     <p className="text-xs text-green-muted leading-relaxed">
-                      Go to **Settings &gt; About Phone** and tap **Build Number** 7 times. Then go to **Developer Options** and enable **USB Debugging**.
+                      Go to **Settings &gt; About Phone** and tap **Build Number** 7 times. Enable **USB Debugging** inside the newly unlocked **Developer Options**.
                     </p>
                   </div>
                 </div>
@@ -122,82 +170,72 @@ export default function DownloadAssistance() {
                     2
                   </div>
                   <div>
-                    <h4 className="font-bold text-ink text-sm mb-1">Connect to PC</h4>
+                    <h4 className="font-bold text-ink text-sm mb-1">Connect & Execute</h4>
                     <p className="text-xs text-green-muted leading-relaxed">
-                      Connect your Android device to your computer via USB. Authorize debugging if prompted on your screen.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="w-8 h-8 rounded-full bg-green/5 border border-green/10 flex items-center justify-center flex-shrink-0 text-green font-bold text-xs">
-                    3
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-ink text-sm mb-1">Execute command</h4>
-                    <p className="text-xs text-green-muted leading-relaxed">
-                      Navigate to your downloaded APK folder in your CLI tool, and run the generated adb command to stream the install.
+                      Connect your device to your computer via USB. Select your target APK below, copy the generated command, and run it in your terminal.
                     </p>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Dynamic ADB Command Card */}
-            <div className="lg:col-span-5 bg-card border border-green-muted/15 rounded-2xl p-6">
-              <div className="mb-4">
-                <label className="block text-xs font-bold uppercase tracking-wider text-green-muted mb-2">
-                  Select Target APK
-                </label>
-                <select
-                  value={selectedApkForAdb.file}
-                  onChange={(e) => {
-                    const selected = APKs.find((apk) => apk.file === e.target.value);
-                    if (selected) setSelectedApkForAdb(selected);
-                  }}
-                  className="w-full px-3 py-2 bg-white rounded-lg border border-green-muted/20 text-xs font-semibold focus:outline-none focus:border-green"
-                >
-                  {APKs.map((apk) => (
-                    <option key={apk.file} value={apk.file}>
-                      {apk.name} ({apk.size})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="relative bg-ink text-zinc-300 p-4 rounded-xl font-mono text-xs mb-4 select-all group border border-white/5">
-                <div className="absolute top-2.5 right-2.5">
-                  <button
-                    onClick={copyToClipboard}
-                    className="p-1.5 bg-white/5 rounded hover:bg-white/10 hover:text-white transition-all"
-                    title="Copy command"
+              {/* Dynamic ADB Command Card */}
+              <div className="bg-card border border-green-muted/15 rounded-2xl p-6">
+                <div className="mb-4">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-green-muted mb-2">
+                    Select Target APK
+                  </label>
+                  <select
+                    value={selectedApkForAdb.file}
+                    onChange={(e) => {
+                      const selected = APKs.find((apk) => apk.file === e.target.value);
+                      if (selected) setSelectedApkForAdb(selected);
+                    }}
+                    className="w-full px-3 py-2 bg-white rounded-lg border border-green-muted/20 text-xs font-semibold focus:outline-none focus:border-green"
                   >
-                    <MdContentCopy size={14} />
-                  </button>
+                    {APKs.map((apk) => (
+                      <option key={apk.file} value={apk.file}>
+                        {apk.name} ({apk.size})
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <span className="text-green-neon">$</span> {adbCommand}
-              </div>
 
-              <button
-                onClick={copyToClipboard}
-                className={`w-full py-2.5 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition-all ${
-                  copied
-                    ? 'bg-green text-white'
-                    : 'bg-ink text-white hover:bg-ink/90'
-                }`}
-              >
-                {copied ? (
-                  <>
-                    <MdCheckCircle size={16} />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <MdUsb size={16} />
-                    Copy ADB Command
-                  </>
-                )}
-              </button>
+                <div className="relative bg-ink text-zinc-300 p-4 rounded-xl font-mono text-xs mb-4 select-all group border border-white/5">
+                  <div className="absolute top-2.5 right-2.5">
+                    <button
+                      onClick={copyToClipboard}
+                      className="p-1.5 bg-white/5 rounded hover:bg-white/10 hover:text-white transition-all"
+                      title="Copy command"
+                    >
+                      <MdContentCopy size={14} />
+                    </button>
+                  </div>
+                  <span className="text-green-neon">$</span> {adbCommand}
+                </div>
+
+                <button
+                  onClick={copyToClipboard}
+                  className={`w-full py-2.5 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition-all ${
+                    copied
+                      ? 'bg-green text-white'
+                      : 'bg-ink text-white hover:bg-ink/90'
+                  }`}
+                >
+                  {copied ? (
+                    <>
+                      <MdCheckCircle size={16} />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <MdUsb size={16} />
+                      Copy ADB Command
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
+
           </div>
         </div>
       </div>

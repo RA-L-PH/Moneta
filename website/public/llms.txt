@@ -1,0 +1,17 @@
+# Moneta
+
+> Moneta is a free, open-source, and privacy-first personal finance tracking application for Android powered by local AI and NVIDIA NIM.
+
+Moneta automatically parses bank transaction SMS messages on-device, categorizes expenses and income, provides rich financial analytics, and integrates with NVIDIA NIM AI for conversational financial insights without compromising user privacy.
+
+## Core Features
+- [Overview & Source Code](https://github.com/RA-L-PH/Moneta): Moneta open source repository, architecture overview, and contributing guidelines.
+- [Android Releases & Downloads](https://github.com/RA-L-PH/Moneta/releases/tag/Latest): Pre-built APK releases for ARM64 (recommended), ARMv7a, x86_64, and Universal architectures.
+- [SMS Parser Documentation](https://github.com/RA-L-PH/Moneta#sms-parsing): Detailed guide on regex-based instant bank SMS parsing for 50+ Indian banks.
+- [AI Intelligence & Privacy](https://github.com/RA-L-PH/Moneta#ai-intelligence): Information on local storage architecture, NVIDIA NIM cloud/local LLM queries, and zero data selling guarantee.
+- [LLMs Extended Context](https://moneta-insights.pages.dev/llms-full.txt): Detailed full-length project documentation and context for large language models.
+
+## Optional
+- [Setup & Development Guide](https://github.com/RA-L-PH/Moneta#development-setup): Instructions for cloning, building with Flutter/Android SDK, and running Moneta locally.
+- [Issue Tracker & Feature Requests](https://github.com/RA-L-PH/Moneta/issues): Community issue tracker for reporting bugs and proposing new features.
+- [Developer Profile](https://github.com/RA-L-PH): Profile and projects by the creator of Moneta.

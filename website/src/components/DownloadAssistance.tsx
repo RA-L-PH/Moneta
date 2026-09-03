@@ -133,10 +133,15 @@ export default function DownloadAssistance() {
             {/* Dynamic ADB Command Card */}
             <div className="bg-card border border-green-muted/15 rounded-2xl p-6">
               <div className="mb-4">
-                <label className="block text-xs font-bold uppercase tracking-wider text-green-muted mb-2">
+                <label
+                  htmlFor="target-apk-select"
+                  className="block text-xs font-bold uppercase tracking-wider text-green-muted mb-2"
+                >
                   Select Target APK
                 </label>
                 <select
+                  id="target-apk-select"
+                  aria-label="Select Target APK"
                   value={selectedApkForAdb.file}
                   onChange={(e) => {
                     const selected = APKs.find((apk) => apk.file === e.target.value);
@@ -156,6 +161,7 @@ export default function DownloadAssistance() {
                 <div className="absolute top-2.5 right-2.5">
                   <button
                     onClick={copyToClipboard}
+                    aria-label="Copy ADB command to clipboard"
                     className="p-1.5 bg-white/5 rounded hover:bg-white/10 hover:text-white transition-all"
                     title="Copy command"
                   >
@@ -167,6 +173,7 @@ export default function DownloadAssistance() {
 
               <button
                 onClick={copyToClipboard}
+                aria-label="Copy ADB Command"
                 className={`w-full py-2.5 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition-all ${
                   copied
                     ? 'bg-green text-white'

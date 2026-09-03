@@ -1,0 +1,37 @@
+# Moneta - Complete Project Documentation for LLMs
+
+> Moneta is a smart, open-source personal finance management application for Android built for privacy, performance, and financial clarity.
+
+## Project Summary
+Moneta is an open-source Android app designed to simplify personal finance management. Unlike cloud-dependent budgeting apps, Moneta operates with a local-first philosophy, ensuring that sensitive financial transaction data never leaves the user's phone unless explicitly requested when querying AI assistants.
+
+## Key Capabilities
+
+### 1. Automatic Bank SMS Transaction Capture
+- Zero-latency parsing: Parses transaction SMS in under 5 milliseconds using optimized regex pattern matchers.
+- Over 50 Indian banking institutions supported, including SBI, HDFC, ICICI, Axis Bank, PNB, Kotak Mahindra, and digital wallets.
+- Distinguishes between Debits, Credits, UPI transfers, ATM withdrawals, and refunds.
+- Built-in duplicate detection and noise filtering.
+
+### 2. AI Intelligence (NVIDIA NIM / Gemini AI)
+- Conversational financial query interface.
+- Spending habit summaries, anomaly detection, and budget recommendations.
+- Local NLP fallback for categorizing transactions across 15+ standard categories (Food, Travel, Utilities, Salary, Subscriptions, Shopping, etc.).
+
+### 3. Local-First Privacy & Architecture
+- Local SQLite / Hive database with encryption support.
+- No analytics trackers or advertisement SDKs.
+- Home screen widget for instant daily balance and expense oversight.
+
+## Installation & Distribution
+- Latest stable APKs are distributed via GitHub Releases:
+  - ARM64-v8a (Recommended for 2019+ devices): `moneta-v2.0.0-arm64-v8a.apk`
+  - ARMv7a (Older 32-bit devices): `moneta-v2.0.0-armeabi-v7a.apk`
+  - x86_64 (Emulators & ChromeOS): `moneta-v2.0.0-x86_64.apk`
+  - Universal (All architectures): `moneta-v2.0.0.apk`
+
+## Resources & Links
+- Repository: https://github.com/RA-L-PH/Moneta
+- Releases: https://github.com/RA-L-PH/Moneta/releases
+- Issues: https://github.com/RA-L-PH/Moneta/issues
+- Creator: https://github.com/RA-L-PH

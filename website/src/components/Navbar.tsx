@@ -46,7 +46,12 @@ export default function Navbar() {
           </a>
         </div>
 
-        <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-ink">
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden p-2 text-ink"
+          aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={open}
+        >
           {open ? <HiX size={22} /> : <HiMenuAlt3 size={22} />}
         </button>
       </div>
